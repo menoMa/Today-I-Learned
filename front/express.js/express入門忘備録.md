@@ -121,3 +121,24 @@ router.get('/articleAuthor/:author', function (req, res) {
 * リレーションが多い場合 オブジェクト同士の関連が強いシステムなど
 * トランザクション処理が多い場合 厳密なデータ整合性が求められるシステム
 
+# azure mongoDBをmongooseを使って接続する場合
+mongoose v5.0.0 以降は以下のようにして接続する必要があります。
+Azureの公式ドキュメントと比べて uri と connect時の引数が異なるので注意してください
+```javascript
+const env = require('./env/environment');
+var mongoose = require('mongoose');
+
+// DB設定 
+// NOTE:mongoose v5.0.0 以降は以下のようにして接続する必要があります。
+mongoose.Promise = global.Promise;
+const mongoUri = `mongodb://${env.accountName}.documents.azure.com:${env.port}/?ssl=true&replicaSet=globaldb`;
+
+mongoose.connect(mongoUri, {
+    auth: {
+        user: env.accountName,
+        password: env.key
+    }
+});
+```
+
+[参考](https://stackoverflow.com/questions/48425520/error-connecting-to-azure-illegal-character-in-password-with-mongoose-5-0-1-but)
